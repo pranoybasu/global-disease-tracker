@@ -182,16 +182,53 @@ export const generateMalariaGlobalData = () => {
   const totals = countries.reduce(
     (acc, country) => ({
       cases: acc.cases + country.cases,
+      todayCases: acc.todayCases + country.todayCases,
       deaths: acc.deaths + country.deaths,
+      todayDeaths: acc.todayDeaths + country.todayDeaths,
       recovered: acc.recovered + country.recovered,
+      todayRecovered: acc.todayRecovered + country.todayRecovered,
       active: acc.active + country.active,
+      critical: acc.critical + country.critical,
+      tests: acc.tests + country.tests,
+      population: acc.population + country.population,
+      affected: acc.affected + 1,
     }),
-    { cases: 0, deaths: 0, recovered: 0, active: 0 }
+    {
+      cases: 0,
+      todayCases: 0,
+      deaths: 0,
+      todayDeaths: 0,
+      recovered: 0,
+      todayRecovered: 0,
+      active: 0,
+      critical: 0,
+      tests: 0,
+      population: 0,
+      affected: 0,
+    }
   );
+
+  // Calculate per million metrics
+  const casesPerOneMillion = (totals.cases / totals.population) * 1_000_000;
+  const deathsPerOneMillion = (totals.deaths / totals.population) * 1_000_000;
+  const testsPerOneMillion = (totals.tests / totals.population) * 1_000_000;
 
   return {
     global: {
-      ...totals,
+      cases: totals.cases,
+      todayCases: totals.todayCases,
+      deaths: totals.deaths,
+      todayDeaths: totals.todayDeaths,
+      recovered: totals.recovered,
+      todayRecovered: totals.todayRecovered,
+      active: totals.active,
+      critical: totals.critical,
+      tests: totals.tests,
+      affected: totals.affected,
+      casesPerOneMillion,
+      deathsPerOneMillion,
+      testsPerOneMillion,
+      population: totals.population,
       updated: Date.now(),
     },
     countries,

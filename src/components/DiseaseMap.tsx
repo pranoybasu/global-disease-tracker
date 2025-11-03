@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Tooltip, LayerGroup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import type { CountryData, DiseaseType } from '../types';
 import { getDiseaseConfig } from '../config/diseases';
-import { Users, Activity, Heart, HeartCrack, Shield } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 export type MapStyle = 'light' | 'color' | 'dark';
@@ -29,9 +28,6 @@ export function DiseaseMap({
   zoom = 2,
   mapStyle = 'light',
   scaleMode = 'logarithmic',
-  populationNormalized = false,
-  momentumMode = 'none',
-  showProjected = false,
   markerSize = 50,
   onMarkerClick,
 }: DiseaseMapProps) {

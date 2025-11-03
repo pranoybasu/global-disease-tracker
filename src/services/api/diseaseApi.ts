@@ -45,22 +45,38 @@ const fetchDiseaseData = async (disease: DiseaseType): Promise<DiseaseDataRespon
 
     case Disease.INFLUENZA: {
       // Mock data with seasonal flu patterns
-      return getInfluenzaMockData();
+      const influenzaData = getInfluenzaMockData();
+      return {
+        global: influenzaData.global,
+        countries: influenzaData.countries
+      };
     }
 
     case Disease.MPOX: {
       // Mock data with endemic African + outbreak patterns
-      return getMpoxMockData();
+      const mpoxData = getMpoxMockData();
+      return {
+        global: mpoxData.global,
+        countries: mpoxData.countries
+      };
     }
 
     case Disease.MALARIA: {
       // Mock data with tropical zone + seasonal patterns
-      return getMalariaMockData();
+      const malariaData = getMalariaMockData();
+      return {
+        global: malariaData.global,
+        countries: malariaData.countries
+      };
     }
 
     case Disease.DENGUE: {
       // Mock data with Southeast Asian + Latin American patterns
-      return getDengueMockData();
+      const dengueData = getDengueMockData();
+      return {
+        global: dengueData.global,
+        countries: dengueData.countries
+      };
     }
 
     default: {
