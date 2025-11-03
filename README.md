@@ -7,6 +7,12 @@ A modern, interactive dashboard for tracking multiple global diseases including 
 ![Vite](https://img.shields.io/badge/Vite-7.1-646cff?logo=vite)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## 🚀 Live Demo
+
+**Production URL**: [https://global-disease-tracker-ws0794eak-pranoybasus-projects.vercel.app](https://global-disease-tracker-ws0794eak-pranoybasus-projects.vercel.app)
+
+View the live application deployed on Vercel with automatic HTTPS, CDN distribution, and global edge network.
+
 ## ✨ Features
 
 ### Multi-Disease Support
