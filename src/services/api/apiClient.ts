@@ -2,17 +2,33 @@
  * Base API client configuration with axios and error handling
  */
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
+
+// Extend the InternalAxiosRequestConfig to include metadata
+interface RequestConfigWithMetadata extends InternalAxiosRequestConfig {
+  metadata?: {
+    startTime: Date;
+  };
+  _retry?: number;
+}
 
 export class ApiError extends Error {
+  status?: number;
+  code?: string;
+  originalError?: Error;
+
   constructor(
     message: string,
-    public status?: number,
-    public code?: string,
-    public originalError?: Error
+    status?: number,
+    code?: string,
+    originalError?: Error
   ) {
     super(message);
     this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.originalError = originalError;
   }
 }
 
@@ -46,10 +62,11 @@ export class ApiClient {
   private setupInterceptors() {
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => {
+      (config: InternalAxiosRequestConfig) => {
         // Add request timestamp for debugging
-        config.metadata = { startTime: new Date() };
-        return config;
+        const configWithMetadata = config as RequestConfigWithMetadata;
+        configWithMetadata.metadata = { startTime: new Date() };
+        return configWithMetadata;
       },
       (error) => Promise.reject(error)
     );
@@ -58,8 +75,9 @@ export class ApiClient {
     this.client.interceptors.response.use(
       (response) => {
         // Log response time in development
-        if (import.meta.env.DEV && response.config.metadata) {
-          const duration = new Date().getTime() - response.config.metadata.startTime.getTime();
+        const configWithMetadata = response.config as RequestConfigWithMetadata;
+        if (import.meta.env.DEV && configWithMetadata.metadata) {
+          const duration = new Date().getTime() - configWithMetadata.metadata.startTime.getTime();
           console.log(
             `[API] ${response.config.method?.toUpperCase()} ${response.config.url} - ${duration}ms`
           );
@@ -73,7 +91,7 @@ export class ApiClient {
   }
 
   private async handleError(error: AxiosError): Promise<never> {
-    const config = error.config as AxiosRequestConfig & { _retry?: number };
+    const config = error.config as RequestConfigWithMetadata;
 
     // Retry logic for network errors or 5xx errors
     if (
@@ -94,8 +112,9 @@ export class ApiClient {
     // Transform error into ApiError
     if (error.response) {
       // Server responded with error status
+      const errorData = error.response.data as { message?: string } | undefined;
       throw new ApiError(
-        error.response.data?.message || error.message,
+        errorData?.message || error.message,
         error.response.status,
         error.code,
         error

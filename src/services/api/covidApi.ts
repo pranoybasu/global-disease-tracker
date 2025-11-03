@@ -3,10 +3,11 @@
  * Documentation: https://disease.sh/docs/
  */
 
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import type { UseQueryResult } from '@tanstack/react-query';
 import { diseaseShApiClient } from './apiClient';
 import { queryKeys } from './queryClient';
-import type { CountryData, TimelineEntry } from '@/types';
+import type { CountryData, TimelineEntry, GlobalStats } from '@/types';
 
 // API Response types (disease.sh specific)
 interface DiseaseShCountryResponse {
@@ -80,24 +81,25 @@ interface DiseaseShGlobalResponse {
 function transformCountryData(data: DiseaseShCountryResponse): CountryData {
   return {
     country: data.country,
-    iso2: data.countryInfo.iso2,
-    iso3: data.countryInfo.iso3,
-    lat: data.countryInfo.lat,
-    lng: data.countryInfo.long,
-    confirmed: data.cases,
-    deaths: data.deaths,
-    recovered: data.recovered,
-    active: data.active,
-    tests: data.tests,
-    population: data.population,
+    countryInfo: data.countryInfo,
+    cases: data.cases,
     todayCases: data.todayCases,
+    deaths: data.deaths,
     todayDeaths: data.todayDeaths,
+    recovered: data.recovered,
     todayRecovered: data.todayRecovered,
+    active: data.active,
     critical: data.critical,
-    casesPerMillion: data.casesPerOneMillion,
-    deathsPerMillion: data.deathsPerOneMillion,
-    testsPerMillion: data.testsPerOneMillion,
-    updatedAt: new Date(data.updated),
+    casesPerOneMillion: data.casesPerOneMillion,
+    deathsPerOneMillion: data.deathsPerOneMillion,
+    tests: data.tests,
+    testsPerOneMillion: data.testsPerOneMillion,
+    population: data.population,
+    continent: data.continent,
+    oneCasePerPeople: data.oneCasePerPeople,
+    oneDeathPerPeople: data.oneDeathPerPeople,
+    oneTestPerPeople: data.oneTestPerPeople,
+    updated: data.updated,
   };
 }
 
@@ -107,14 +109,10 @@ function transformHistoricalData(data: DiseaseShHistoricalResponse): TimelineEnt
 
   dates.forEach((date) => {
     entries.push({
-      date: new Date(date),
-      confirmed: data.timeline.cases[date] || 0,
+      date: date,
+      cases: data.timeline.cases[date] || 0,
       deaths: data.timeline.deaths[date] || 0,
       recovered: data.timeline.recovered[date] || 0,
-      active:
-        (data.timeline.cases[date] || 0) -
-        (data.timeline.deaths[date] || 0) -
-        (data.timeline.recovered[date] || 0),
     });
   });
 
@@ -122,46 +120,56 @@ function transformHistoricalData(data: DiseaseShHistoricalResponse): TimelineEnt
 }
 
 // API Functions
+
+/**
+ * Fetch global COVID-19 statistics
+ * Standalone export for use by diseaseApi adapter
+ */
+export async function fetchGlobalStats(): Promise<GlobalStats> {
+  const data = await diseaseShApiClient.get<DiseaseShGlobalResponse>('/all');
+
+  return {
+    cases: data.cases,
+    todayCases: data.todayCases,
+    deaths: data.deaths,
+    todayDeaths: data.todayDeaths,
+    recovered: data.recovered,
+    todayRecovered: data.todayRecovered,
+    active: data.active,
+    critical: data.critical,
+    tests: data.tests,
+    affected: data.affectedCountries,
+    casesPerOneMillion: data.casesPerOneMillion,
+    deathsPerOneMillion: data.deathsPerOneMillion,
+    testsPerOneMillion: data.testsPerOneMillion,
+    population: data.population,
+    updated: data.updated,
+  };
+}
+
+/**
+ * Fetch COVID-19 statistics for all countries
+ * Standalone export for use by diseaseApi adapter
+ * @param sort - Field to sort by (e.g., 'cases', 'deaths', 'recovered')
+ */
+export async function fetchCountriesData(sort?: string): Promise<CountryData[]> {
+  const params = sort ? { sort } : undefined;
+  const data = await diseaseShApiClient.get<DiseaseShCountryResponse[]>('/countries', { params });
+
+  return data.map(transformCountryData);
+}
+
 export const covidApi = {
   /**
    * Fetch global COVID-19 statistics
    */
-  async getGlobalStats(): Promise<CountryData> {
-    const data = await diseaseShApiClient.get<DiseaseShGlobalResponse>('/all');
-
-    return {
-      country: 'Global',
-      iso2: 'WW',
-      iso3: 'WLD',
-      lat: 0,
-      lng: 0,
-      confirmed: data.cases,
-      deaths: data.deaths,
-      recovered: data.recovered,
-      active: data.active,
-      tests: data.tests,
-      population: data.population,
-      todayCases: data.todayCases,
-      todayDeaths: data.todayDeaths,
-      todayRecovered: data.todayRecovered,
-      critical: data.critical,
-      casesPerMillion: data.casesPerOneMillion,
-      deathsPerMillion: data.deathsPerOneMillion,
-      testsPerMillion: data.testsPerOneMillion,
-      updatedAt: new Date(data.updated),
-    };
-  },
+  getGlobalStats: fetchGlobalStats,
 
   /**
    * Fetch COVID-19 statistics for all countries
    * @param sort - Field to sort by (e.g., 'cases', 'deaths', 'recovered')
    */
-  async getAllCountries(sort?: string): Promise<CountryData[]> {
-    const params = sort ? { sort } : undefined;
-    const data = await diseaseShApiClient.get<DiseaseShCountryResponse[]>('/countries', { params });
-
-    return data.map(transformCountryData);
-  },
+  getAllCountries: fetchCountriesData,
 
   /**
    * Fetch COVID-19 statistics for a specific country
@@ -229,7 +237,7 @@ export const covidApi = {
 /**
  * Hook to fetch global COVID-19 statistics
  */
-export function useGlobalCovidStats(): UseQueryResult<CountryData, Error> {
+export function useGlobalCovidStats(): UseQueryResult<GlobalStats, Error> {
   return useQuery({
     queryKey: queryKeys.covid.global(),
     queryFn: () => covidApi.getGlobalStats(),

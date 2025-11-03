@@ -2,7 +2,8 @@
  * React Query configuration and client setup
  */
 
-import { QueryClient, DefaultOptions } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
+import type { DefaultOptions } from '@tanstack/react-query';
 import { ApiError } from './apiClient';
 
 // Default options for all queries

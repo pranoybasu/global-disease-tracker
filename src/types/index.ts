@@ -2,10 +2,41 @@
  * Core TypeScript type definitions for Global Disease Tracker
  */
 
-export enum Disease {
-  COVID19 = 'covid19',
-  INFLUENZA = 'influenza',
-  MPOX = 'mpox',
+export const Disease = {
+  COVID19: 'covid19',
+  INFLUENZA: 'influenza',
+  MPOX: 'mpox',
+  MALARIA: 'malaria',
+  DENGUE: 'dengue',
+} as const;
+
+export type Disease = typeof Disease[keyof typeof Disease];
+
+/**
+ * Type alias for Disease for better semantic clarity in API contexts
+ */
+export type DiseaseType = Disease;
+
+/**
+ * Global statistics for a disease
+ * Matches the structure returned by disease.sh API and mock generators
+ */
+export interface GlobalStats {
+  cases: number;
+  todayCases: number;
+  deaths: number;
+  todayDeaths: number;
+  recovered: number;
+  todayRecovered: number;
+  active: number;
+  critical: number;
+  tests: number;
+  affected: number;
+  casesPerOneMillion: number;
+  deathsPerOneMillion: number;
+  testsPerOneMillion: number;
+  population: number;
+  updated: number;
 }
 
 export interface CountryData {

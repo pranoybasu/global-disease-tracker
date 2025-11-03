@@ -27,16 +27,38 @@
   --color-influenza-800: #1e40af;
   --color-influenza-900: #1e3a8a;
 
-  --color-mpox-50: #fefce8;
-  --color-mpox-100: #fef9c3;
-  --color-mpox-200: #fef08a;
-  --color-mpox-300: #fde047;
-  --color-mpox-400: #facc15;
-  --color-mpox-500: #eab308;
-  --color-mpox-600: #ca8a04;
-  --color-mpox-700: #a16207;
-  --color-mpox-800: #854d0e;
-  --color-mpox-900: #713f12;
+  --color-mpox-50: #faf5ff;
+  --color-mpox-100: #f3e8ff;
+  --color-mpox-200: #e9d5ff;
+  --color-mpox-300: #d8b4fe;
+  --color-mpox-400: #c084fc;
+  --color-mpox-500: #8b5cf6;
+  --color-mpox-600: #7c3aed;
+  --color-mpox-700: #6d28d9;
+  --color-mpox-800: #5b21b6;
+  --color-mpox-900: #4c1d95;
+
+  --color-malaria-50: #fefce8;
+  --color-malaria-100: #fef9c3;
+  --color-malaria-200: #fef08a;
+  --color-malaria-300: #fde047;
+  --color-malaria-400: #facc15;
+  --color-malaria-500: #eab308;
+  --color-malaria-600: #ca8a04;
+  --color-malaria-700: #a16207;
+  --color-malaria-800: #854d0e;
+  --color-malaria-900: #713f12;
+
+  --color-dengue-50: #fff7ed;
+  --color-dengue-100: #ffedd5;
+  --color-dengue-200: #fed7aa;
+  --color-dengue-300: #fdba74;
+  --color-dengue-400: #fb923c;
+  --color-dengue-500: #f97316;
+  --color-dengue-600: #ea580c;
+  --color-dengue-700: #c2410c;
+  --color-dengue-800: #9a3412;
+  --color-dengue-900: #7c2d12;
 }
 
 /* Shadcn/ui CSS variables for light and dark mode */
