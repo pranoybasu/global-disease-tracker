@@ -48,13 +48,13 @@ export const diseaseConfigs: Record<Disease, DiseaseConfig> = {
     description: 'Coronavirus Disease 2019 - A respiratory illness caused by SARS-CoV-2',
     icon: Activity,
     colors: {
-      primary: 'rgb(239 68 68)',           // red-500
-      secondary: 'rgb(252 165 165)',       // red-300
-      marker: 'rgb(239 68 68 / 0.6)',      // red-500 with opacity
-      markerBorder: 'rgb(153 27 27)',      // red-900
-      text: 'text-red-700',
-      bg: 'bg-red-50',
-      bgHover: 'hover:bg-red-100',
+      primary: 'rgb(20 184 166)',          // teal-500
+      secondary: 'rgb(94 234 212)',        // teal-300
+      marker: 'rgb(20 184 166 / 0.6)',     // teal-500 with opacity
+      markerBorder: 'rgb(19 78 74)',       // teal-900
+      text: 'text-teal-700',
+      bg: 'bg-teal-50',
+      bgHover: 'hover:bg-teal-100',
     },
     stats: {
       hasRealTimeData: true,

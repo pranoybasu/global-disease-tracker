@@ -23,6 +23,7 @@ interface DiseaseStatsCardProps {
   disease: DiseaseType;
   formatValue?: (value: number | string) => string;
   className?: string;
+  onClick?: () => void;
 }
 
 /**
@@ -48,6 +49,7 @@ export function DiseaseStatsCard({
   disease,
   formatValue,
   className = '',
+  onClick,
 }: DiseaseStatsCardProps) {
   const diseaseConfig = diseaseConfigs[disease];
   const displayValue = formatValue
@@ -66,11 +68,12 @@ export function DiseaseStatsCard({
 
   return (
     <Card
-      className={`transition-all hover:shadow-lg ${className}`}
+      className={`transition-all hover:shadow-lg ${onClick ? 'cursor-pointer' : ''} ${className}`}
       style={{
         borderTopWidth: '3px',
         borderTopColor: diseaseConfig.colors.primary,
       }}
+      onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-600">

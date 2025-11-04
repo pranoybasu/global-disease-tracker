@@ -36,6 +36,11 @@ View the live application deployed on Vercel with automatic HTTPS, CDN distribut
 - **Multiple Map Styles**: Light, color, and dark themes
 - **Logarithmic/Linear Scaling**: Flexible data visualization
 - **Collapsible Control Panel**: Clean, organized interface
+- **Detailed Statistics Pages**: In-depth analysis with charts and tables
+- **Multi-Format Export**: Export data as PDF, PNG, CSV, or JSON
+- **Advanced Filtering**: Search, sort, and filter country data
+- **Interactive Charts**: Bar, line, and area charts with Recharts
+- **Shareable URLs**: Copy links to specific disease metrics
 
 ## 🏗️ Architecture
 
@@ -53,6 +58,11 @@ View the live application deployed on Vercel with automatic HTTPS, CDN distribut
 | **Animations** | Framer Motion | 12.23 | Declarative animations |
 | **Maps** | Leaflet + React-Leaflet | 1.9.4 / 5.0.0 | Interactive mapping |
 | **HTTP Client** | Axios | 1.13 | API requests with retry logic |
+| **Routing** | React Router | 7.9 | Client-side routing |
+| **Charts** | Recharts | 2.15 | Composable charting library |
+| **PDF Export** | jsPDF | 2.5 | PDF document generation |
+| **Image Export** | html2canvas | 1.4 | DOM to canvas conversion |
+| **Notifications** | Sonner | 1.7 | Toast notifications |
 | **Testing** | Vitest | 4.0.6 | Unit testing framework |
 | **Icons** | Lucide React | 0.552.0 | Beautiful icon library |
 
@@ -68,14 +78,27 @@ global-disease-tracker/
 │   │   │   ├── toggle.tsx
 │   │   │   ├── slider.tsx
 │   │   │   ├── skeleton.tsx
-│   │   │   └── button.tsx
-│   │   ├── DiseaseMap.tsx           # Interactive Leaflet map
-│   │   ├── DiseaseStatsCard.tsx     # Animated statistics cards
-│   │   ├── CollapsibleControlPanel.tsx  # Collapsible sidebar
-│   │   └── ErrorBoundary.tsx        # Error handling component
+│   │   │   ├── button.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── table.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   └── tabs.tsx
+│   │   ├── DiseaseMap.tsx                # Interactive Leaflet map
+│   │   ├── DiseaseStatsCard.tsx          # Animated statistics cards
+│   │   ├── DiseaseSelector.tsx           # Disease selection dropdown
+│   │   ├── CollapsibleControlPanel.tsx   # Collapsible sidebar
+│   │   ├── CountryDataTable.tsx          # Sortable data table
+│   │   ├── CountryComparisonChart.tsx    # Bar/Line/Area charts
+│   │   ├── MetricDistributionChart.tsx   # Pie/Donut charts
+│   │   ├── ExportModal.tsx               # Multi-format export dialog
+│   │   └── ErrorBoundary.tsx             # Error handling component
+│   │
+│   ├── pages/               # Route pages
+│   │   └── DetailedStatsPage.tsx   # Detailed statistics view
 │   │
 │   ├── config/              # Configuration files
-│   │   └── diseases.ts      # Disease metadata and color schemes
+│   │   ├── diseases.ts      # Disease metadata and color schemes
+│   │   └── routes.tsx       # React Router configuration
 │   │
 │   ├── services/            # Business logic and APIs
 │   │   ├── api/
@@ -222,22 +245,98 @@ npm run preview
 
 ## 📖 Usage Guide
 
+### Navigation
+
+#### Main Dashboard
+The homepage (`/`) displays:
+- Interactive world map with disease markers
+- Global statistics cards (Total Cases, Deaths, Recovered, Active)
+- Top 10 affected countries
+- Disease selector and control panel
+
+#### Detailed Statistics Pages
+Click any statistic card to navigate to detailed analysis:
+- Route pattern: `/stats/:disease/:metric`
+- Example: `/stats/covid19/total-cases`
+- Features: Charts, tables, filters, and export options
+
 ### Switching Diseases
 Use the disease selector dropdown in the collapsible control panel to switch between different diseases. The entire UI updates with disease-specific colors and data.
 
 ### Map Controls
 - **Display Mode**: Choose between cumulative cases or momentum (24h, 3-day, 7-day trends)
 - **Map Style**: Switch between light, color, and dark map themes
-- **Scale Mode**: Toggle between linear and logarithmic scaling
 - **Population Normalized**: View cases per million population
-- **Projected Cases**: Enable AI-powered case projections
 - **Marker Size**: Adjust the size of disease markers on the map
 
+### Detailed Statistics Features
+
+#### Interactive Charts
+- **Country Comparison Chart**:
+  - View top 10 countries by metric
+  - Switch between Bar, Line, and Area chart types
+  - Responsive sizing for all devices
+  - Hover tooltips with detailed data
+
+- **Metric Distribution Chart**:
+  - Continental breakdown with Pie or Donut charts
+  - Percentage and absolute values
+  - Color-coded by continent
+
+#### Data Table
+- **Search**: Filter countries by name
+- **Sort**: Click column headers to sort ascending/descending
+- **Filter by Continent**: Dropdown to filter specific regions
+- **Pagination**: Navigate through large datasets (10/25/50/100 rows per page)
+- **Responsive**: Optimized for mobile and desktop viewing
+
+#### Export & Sharing
+
+##### Export Formats
+Click the "Export" button on any detailed stats page to access export options:
+
+1. **PDF Export** 📄
+   - Professional document with charts and tables
+   - Includes metadata (disease, metric, timestamp)
+   - Automatically formatted and sized
+   - Use case: Reports, presentations, documentation
+
+2. **PNG Export** 🖼️
+   - High-resolution image (2x scale)
+   - Captures entire page including charts
+   - Perfect for social media or quick sharing
+   - Use case: Screenshots, visual sharing
+
+3. **CSV Export** 📊
+   - Spreadsheet-compatible format
+   - Headers: Country, Continent, Value
+   - Easy import into Excel, Google Sheets
+   - Use case: Data analysis, further processing
+
+4. **JSON Export** 💾
+   - Structured data format
+   - Includes metadata and full dataset
+   - Programmatic access and integration
+   - Use case: APIs, data pipelines, custom analysis
+
+5. **Share Link** 🔗
+   - Copies current page URL to clipboard
+   - Shareable with colleagues and teams
+   - Preserves disease and metric selection
+   - Use case: Collaboration, bookmarking
+
+##### Export File Naming
+Files are automatically named with the pattern:
+```
+{disease}-{metric}-{timestamp}.{extension}
+```
+Example: `covid19-total-cases-2025-01-04.pdf`
+
 ### Interpreting Data
-- **Red markers**: High case counts or rapid spread
-- **Marker size**: Proportional to case count (or normalized rate)
-- **Stat cards**: Show total cases, deaths, recoveries, and active cases
-- **Top 10 Countries**: Ranked by total case count with detailed metrics
+- **Markers on Map**: Size proportional to case count (or normalized rate)
+- **Stat Cards**: Show total cases, deaths, recoveries, and active cases with 7-day trends
+- **Top 10 Countries**: Ranked by active cases (descending order)
+- **Chart Colors**: Disease-specific theming for visual consistency
 
 ## 🧪 Testing
 
